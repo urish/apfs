@@ -146,6 +146,7 @@ static void free_blocks (block_t block) {
 	return;
     for (listend = block; (tmp = read_fatentry(listend)); listend = tmp)
 	FSState.freeblocks++;
+    FSState.freeblocks++;
     update_free_space();
     check_error();
     set_fatentry(0, block);
@@ -812,7 +813,7 @@ void fs_perror (char *string) {
 	err = fs_errno;
     if (err == 1) {
 	if (string)
-	    printf("%s: %s", string, strerror(errno));
+	    printf("%s: %s\n", string, strerror(errno));
     } else {
 	if (string)
 	    printf("%s: %s\n", string, errors[err]);
