@@ -9,7 +9,7 @@ int main () {
     char buf[1024];
     printf("Reading archive... ");
     fflush(stdout);
-    open_fs("apfs.24Mar2002.fs");
+    open_fs("apfs.28Mar2002.fs");
     if (fs_errno) {
 	fs_perror("open_fs");
 	return 0;

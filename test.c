@@ -223,9 +223,16 @@ void process_command (char *line) {
 	printf("Invalid command name \"%s\".\nFor more information, type \"help\".\n", cmd);
 }
 
-int main () {
+int main (int argc, char *argv[]) {
     char *line, *linestart;
     signal(SIGINT, (sig_t)cmd_exit);
+    if (argc > 1) {
+        int i;
+	for (i = 1; i < argc; i++)
+	    process_command(argv[i]);
+	close(1);
+	cmd_exit(0);
+    }
     while (1) {
 	line = readline("apfs> ");
 	if (!line)

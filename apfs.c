@@ -356,6 +356,7 @@ static FSFileInfo *get_file_info (char *dir) {
 	fi->size = 0;
 	fi->attrs = FATTR_FILE | FATTR_DIRECTORY;
 	fi->firstblk = rootdir();
+	fi->dirent = (FSLocation){0, 0};
 	return fi;
     }
     if ((ptr = strrchr(tmp, '/'))) {
@@ -771,7 +772,12 @@ int fs_rmdir (char *path) {
     check_error_ret(-1);
     if ((fi->attrs & FATTR_DIRECTORY) != FATTR_DIRECTORY) {
 	fs_errno = FS_ENOTDIR;
-	return NULL;
+	return -1;
+    }
+    // deleting of root directory is not allowed.
+    if (fi->firstblk == rootdir()) {
+	fs_errno = FS_ENOPERM;
+	return -1;
     }
     if (fi->firstblk) {
 	dir_search_init(fi, &dsinfo);
@@ -804,7 +810,8 @@ void fs_perror (char *string) {
 	"Bad file format",
 	"Invalid filesystem version",
 	"Directory is not empty",
-	"Out of memory"
+	"Out of memory",
+	"Operation not permitted"
     };
     int err;
     if (fs_errno >= sizeof(errors) / sizeof(errors[0]))

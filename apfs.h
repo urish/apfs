@@ -105,3 +105,4 @@ extern void fs_perror(char *str);
 #define FS_EVERSION	10	/* Invalid version number */
 #define FS_ENOTEMPTY	11	/* Directory not empty */
 #define FS_ENOMEM	12	/* Out of memory */
+#define FS_ENOPERM	13	/* Operation not permitted */
