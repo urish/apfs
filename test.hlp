@@ -1,0 +1,120 @@
+<AHML>
+<PRE>
+<TOPIC name="">
+Available commands:
+File system commands: CREATE, OPEN, CLOSE, INFO
+File commands: CAT, DEL, COPYIN, COPYOUT
+Directory commands: CD, MKDIR, RMDIR, LS
+</TOPIC>
+
+<TOPIC name="create">
+<B>Syntax:</B> <B>create</B> <R>filename</R> <R>size</R>
+        <B>create</B> <R>filename</R> <R>blocks</R> <R>blocksize</R>
+
+The <B>create</B> command creates a new filesystem, stored in a file specified by
+<R>filename</R>.
+The newly created filesystem size can be specified in two ways:
+1. By passing the <B>create</B> the size in megabytes in the <R>size</R> argument.
+2. By passing the <B>create</B> the count of blocks, and the size of block, in bytes,
+   in the <R>blocks</R> and <R>blocksize</R> arguments, respectively.
+
+<B>See also:</B> open, close
+</TOPIC>
+
+<TOPIC name="open">
+<B>Syntax:</B> <B>open</B> <R>filename</R>
+
+The <B>open</B> command opens the filesystem sits in the file <R>filename</R>.
+
+<B>See also:</B> create, close
+</TOPIC>
+
+<TOPIC name="close">
+<B>Syntax:</B> <B>close</B>
+
+The <B>close</B> command closes the currently open filesystem.
+
+<B>See Also:</B> create, open
+</TOPIC>
+
+<TOPIC name="info">
+<B>Syntax:</B> <B>info</B>
+
+The <B>info</B> command displays you information about the currently open 
+file system. The displayed information includes: 
+Total blocks, free blocks, block size, total/free/used space (in MB), and
+what percent of the space is used.
+</TOPIC>
+
+<TOPIC name="mkdir">
+<B>Syntax:</B> <B>mkdir</B> <R>dirname</R>
+
+The <B>mkdir</B> command makes a new directory specified by <R>dirname</R>.
+
+<B>See also:</B> cd, rmdir
+</TOPIC>
+
+<TOPIC name="rmdir">
+<B>Syntax:</B> <B>rmdir</B> <R>dirname</R>
+
+The <B>rmdir</B> command makes remove the directory <R>dirname</R>.
+
+<B>See also:</B> cd, mkdir
+</TOPIC>
+
+<TOPIC name="cd">
+<B>Syntax:</B> <B>cd</B> <R>dirname</R>
+
+The <B>cd</B> command changes the current working directory to <R>dirname</R>.
+
+<B>Bugs:</B> The <B>cd</B> command is not implemented.
+
+<B>See also:</B> rmdir, mkdir
+</TOPIC>
+
+<TOPIC name="ls">
+<B>Syntax:</B> <B>ls</B> <R>[dirname]</R>
+
+The <B>ls</B> command lists the files/subdirectories in <R>dirname</R>, or in
+the root directory, if <R>dirname</R> isn't specified.
+</TOPIC>
+
+<TOPIC name="copyin">
+<B>Syntax:</B> <B>copyin</B> <R>os_file</R> <R>fs_file</R>
+
+The <B>copyin</B> command copies <R>os_file</R> from the operating system's filesystem
+to <R>fs_file</R> on the currently open filesystem.
+
+<B>See also:</B> copyout
+</TOPIC>
+
+<TOPIC name="copyout">
+<B>Syntax:</B> <B>copyout</B> <R>fs_file</R> <R>os_file</R>
+
+The <B>copyin</B> command copies <R>fs_file</R> from the currently open filesystem
+to <R>os_file</R> on the operating system's filesystem.
+
+<B>See also:</B> copyin
+</TOPIC>
+
+<TOPIC name="cat">
+<B>Syntax:</B> <B>cat</B> <R>file</R>
+
+The <B>cat</B> command prints the contents of <R>file</R>.
+
+<B>Bugs:</B> The <B>cat</B> command is not implemented.
+</TOPIC>
+
+<TOPIC name="del">
+<B>Syntax:</B> <B>del</B> <R>file</R>
+
+The <B>del</B> command removes the specified <R>file</R>.
+</TOPIC>
+<INCLUDE apfs.hlp>
+<PRE>
+<NOTOPIC>
+The topic you requested could not be found in the help file.
+For a list of available topics, hit <B>help</B>.
+</NOTOPIC>
+</PRE>
+</AHML>

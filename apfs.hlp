@@ -1,0 +1,273 @@
+<AHML>
+<PRE>
+<TOPIC name="">
+To view a list of available c functions, hit: <B>help apfs</B>
+</TOPIC>
+<TOPIC name="apfs">
+apfs interface functions:
+* generic functions: <B>fs_perror</B>, <B>fs_errno</B>.
+* filesystem image functions: <B>create_fs</B>, <B>create_fsex</B>, <B>open_fs</B>, <B>format_fs</B>,
+  <B>close_fs</B>, <B>fs_info</B>, <B>fs_flush</B>.
+* directory functions: <B>fs_mkdir</B>, <B>fs_rmdir<B>, <B>fs_deltree</B>, <B>fs_findfirst</B>,
+  <B>fs_findnext</B>, <B>fs_findend</B>.
+* file functions: <B>fs_open</B>, <B>fs_close</B>, <B>fs_remove</B>, <B>fs_removef</B>, <B>fs_write</B>,
+  <B>fs_read</B>, <B>fs_seek</B>, <B>fs_tell</B>, <B>fs_move</B>, <B>fs_movef</B>, <B>fs_rename</B>,
+  <B>fs_renamef</B>, <B>fs_exist</B>, <B>fs_truncate</B>.
+</TOPIC>
+
+<TOPIC name="fs_perror">
+<B>SYNOPSIS:</B> <R>void</R> <B>fs_perror</B> (<R>const</R> <R>char</R> <R>*string</R>)
+
+<B>DESCRIPTION:</B>
+The <B>fs_perror</B> function prints the error message corresponding to the value
+of the <B>fs_errno</B> variable, prepending it the <R>string</R> argument, and
+a colon and space.
+
+<B>SEE ALSO:</B> <B>fs_errno</B>
+</TOPIC>
+
+<TOPIC name="fs_errno">
+The <B>fs_errno</B> global variable contains information about the error
+occured in last apfs function called, or <B>FS_NOERR</B> value, if no error occured.
+The following errors can occur:
+0 <B>FS_NOERR</B> <R>No</R> <R>error</R>.  No error has occured.
+1 <B>FS_EOS</B> <R>Operating</R> <R>System</R> <R>Error</R>.  See system's <B>errno</B> variable for more details.
+2 <B>FS_ENOENT</B> <R>No</R> <R>such</R> <R>file</R> <R>or</R> <R>directory</R>. A component of the specified pathname
+      did not exist.
+3 <B>FS_ENOTDIR</B> <R>File</R> <R>is</R> <R>not</R> <R>a</R> <R>directory</R>.  A component of the pathname existed, but
+      it was not a directory, when a directory was expected.
+4 <B>FS_EISDIR</B> <R>File</R> <R>is</R> <R>a</R> <R>directory</R>.  An attempt was made to <B>fs_open</B> or to
+      <B>fs_remove</B> a directory.
+5 <B>FS_ENOSPACE</B> <R>Filesystem</R> <R>out</R> <R>of</R> <R>space</R>.  An attempt to allocate a new block
+      failed because there was no space left in the file system.
+6 <B>FS_ENAMETOOLONG</B> <R>Name</R> <R>too</R> <R>long</R>.  A component of the pathname exceeded the
+      limit of 252 characters.
+7 <B>FS_ENOBLOCK</B> <R>No</R> <R>such</R> <R>block</R>. An attempt was made to read/write a block number
+      is out of range. This may happen if the filesystem is damaged in some 
+      kind of way.
+8 <B>FS_EEXIST</B> <R>File</R> <R>already</R> <R>exists</R>.  An attempt was made to create a directory
+      that its name already exists.
+9 <B>FS_EFORMAT</B> <R>Invalid</R> <R>file</R> <R>format</R>.  Invalid filesystem format was detected while
+      opening a filesystem using the <B>open_fs</B> function.
+10 <B>FS_EVERSION</B> <R>Invalid</R> <R>file</R> <R>version</R>.  Invalid filesystem version number was
+      detected while opening a file system using the <B>open_fs</B> function.
+</TOPIC>
+
+<TOPIC name="create_fs">
+<B>SYNOPSIS:</B> <R>int</R> <B>create_fs</B> (<R>char*</R> <R>fname</R>, <R>unsigned</R> <R>int</R> <R>size</R>)
+
+<B>DESCRIPTION:</B>
+The <B>create_fs</B> function creates a new filesystem stored in file <R>fname</R>,
+and allocates it <R>size</R> bytes. It automatically calculates the required
+block size and the count of block needed in order to have the file system take
+<R>size</R> bytes.
+Note that size must be a multiplication of 512, starting with 1024.
+
+<B>RETURN VALUES:</B>
+Upon successful creation of the filesystem, the value 0 is returned.
+Otherwise the value -1 is returned and the global variable <r>fs_errno</R> is set
+to indicate the error.
+
+<B>SEE ALSO:</B> <B>create_fsex</B>, <B>open_fs</B>.
+</TOPIC>
+
+<TOPIC name="create_fsex">
+<B>SYNOPSIS:</B> <R>int</R> <B>create_fsex</B> (<R>char*</R> <R>fname</R>, <R>block</R><B>_</B><R>t</R> <R>blocksize</R>, <R>block</R><B>_</B><R>t</R> <R>blockcount</R>)
+
+<B>DESCRIPTION:</B>
+The <B>create_fsex</B> function creates a new filesystem stored in file <R>fname</R>,
+with <R>blockcount</R> blocks each <R>blocksize</R> bytes.
+There must be at least two blocks in a filesystem, and the <R>blocksize</R> must be
+a multiplication of 8, starting with 16 bytes.
+
+<B>RETURN VALUES:</B>
+Upon successful creation of the filesystem, the value 0 is returned.
+Otherwise the value -1 is returned and the global variable <r>fs_errno</R> is set
+to indicate the error.
+	       
+<B>SEE ALSO:</B> <B>create_fs</B>, <B>open_fs</B>.
+</TOPIC>
+
+<TOPIC name="format_fs">
+<B>SYNOPSIS:</B> <R>int</R> <B>format_fs</B> (<R>void</R>)
+
+<B>DESCRIPTION:</B>
+The <B>format_fs</B> function deletes all the content of the currently open file
+system. This function doesn't physically delete the content. Instead, it just
+marks all of the blocks as free, and emptys the root directory.
+
+<B>RETURN VALUES:</B>
+The value 0 is returned on success.
+Otherwise the value -1 is returned and the global variable <r>fs_errno</R> is set
+to indicate the error.
+</TOPIC>
+
+<TOPIC name="open_fs">
+<B>SYNOPSIS:</B> <R>int</R> <B>open_fs</B> (<R>char</R> <R>*fname</R>)
+
+<B>DESCRIPTION:</B>
+The <B>open_fs</B> function loads the file system in <R>fname</R>.
+
+<B>RETURN VALUES:</B>
+The value 0 is returned on success.
+Otherwise the value -1 is returned and the global variable <r>fs_errno</R> is set
+to indicate the error.
+
+<B>SEE ALSO:</B> <B>create_fs</B>, <B>create_fsex</B>, <B>close_fs</B>.
+</TOPIC>
+
+<TOPIC name="close_fs">
+<B>SYNOPSIS:</B> <R>void</R> <B>close_fs</B> (<R>void</R>)
+
+<B>DESCRIPTION:</B>
+The <B>close_fs</B> function closes the currently open filesystem, and flushes
+the fat cache.
+You should always call this function before you finish to work with a file
+system, or the fat cache won't be flush and you may expirience data loss.
+
+<B>SEE ALSO:</B> <B>create_fs</B>, <B>create_fsex</B>, <B>open_fs</B>, <B>fs_flush</B>.
+</TOPIC>
+
+<TOPIC name="fs_info">
+<B>SYNOPSIS:</B> <R>FSInfo</R> <R>*</R> <B>fs_info</B> (<R>void</R>)
+
+<B>DESCRIPTION:</B>
+The <B>fs_info</B> function returns you a pointer to a structure contains information
+about the currently open filesystem.
+The returned structure contains is a FSInfo structure and is defined in apfs.h:
+
+    typedef struct {
+        int  totalblocks;
+	int  freeblocks;
+	int  blocksize;
+    } FSInfo;
+
+<B>RETURN VALUES:</B>
+A pointer to a FSInfo structure contains the filesystem information is
+returned.
+Note that this pointer points into a static object, and will be overwritten by
+subsequent calls to this function.
+</TOPIC>
+
+<TOPIC name="fs_flush">
+<B>SYNOPSIS:</B> <R>void</R> <B>fs_flush</B> (<R>void</R>)
+
+<B>DESCRIPTION:</B>
+The <B>fs_flush</B> function flushes the fat cache of the currently open file
+system.
+If you don't flush the cache, or <B>fs_close</B> the filesystem, the next time you'll
+try using it you may get some of the files damaged, and the free space will be
+incorectly reported.
+
+<B>SEE ALSO:</B> <B>fs_close</B>
+</TOPIC>
+
+<TOPIC name="fs_findfirst">
+<B>SYNOPSIS:</B> <R>FSFileInfo</R> <R>*</R> <B>fs_findfirst</B> (<R>char</R> <R>*directory</R>, <R>FSDirSearchInfo</R> <R>*dsinfo</R>)
+
+<B>DESCRIPTION:</B>
+The <B>fs_findfirst</B> function initializes a search within the specified
+<R>directory</R>.
+You should pass it a pointer to a FSDirSearchInfo structure, that will be used
+to hold some data about the search.
+
+<B>RETURN VALUES:</B>
+The <B>fs_findfirst</B> returns a pointer to FSFileInfo structure that contains
+information about the first file in the given directory.
+If the directory is empty, or an error has occured, it returns the NULL value.
+In the latter case, the fs_errno global variable is set to indicate the error.
+The returned structure points into a static object, and will be overwritten
+by many of the apfs functions. Therefore, you should assume that it's invalid
+after the next apfs function call, or when the passed pointer to the
+FSDirSearchInfo structure becomes invalid.
+
+<B>SEE ALSO:</B> <B>fs_findnext</B>, <B>fs_findend</B>.
+</TOPIC>
+
+<TOPIC name="fs_findnext">
+<B>SYNOPSIS:</B> <R>FSFileInfo</R> <R>*</R> <B>fs_findnext</B> (<R>FSDirSearchInfo</R> <R>*dsinfo</R>)
+
+<B>DESCRIPTION:</B>
+The <B>fs_findnext</B> function returns you the information about the next file in
+a directory search.
+You should first call the <B>fs_findfirst</B> function, that initializes the
+FSDirSearchInfo structure, and then pass a pointer to this structure by <B>dsinfo</B>
+argument.
+For more information, see the help for <B>fs_findfirst</B>.
+
+<B>RETURN VALUES:</B>
+The <B>fs_findnext</B> returns a pointer to FSFileInfo structure that contains
+information about the next file in the directory.
+If the directory is empty, or an error has occured, it returns the NULL value.
+In the latter case, the fs_errno global variable is set to indicate the error.
+The returned structure points into a static object, and will be overwritten
+by many of the apfs functions. Therefore, you should assume that it's invalid
+after the next apfs function call, or when the passed pointer to the
+FSDirSearchInfo structure becomes invalid.
+
+<B>SEE ALSO:</B> <B>fs_findfirst</B>, <B>fs_findend</B>.
+</TOPIC>
+
+<TOPIC name="fs_findend">
+<B>SYNOPSIS:</B> <R>void</R> <B>fs_findend</B> (<R>FSDirSearchInfo</R> <R>*dsinfo</R>)
+
+<B>DESCRIPTION:</B>
+The <B>fs_findend</B> function terminates a directory search.
+You should only call it if you want to terminate a search in the middle.
+You don't have to call it after <B>fs_findfirst<B> or <B>fs_findnext</B>
+returned NULL.
+
+<B>SEE ALSO:</B> <B>fs_findfirst</B>, <B>fs_findnext</B>.
+</TOPIC>
+
+<TOPIC name="fs_mkdir">
+<B>SYNOPSIS:</B> <R>int</R> <B>fs_mkdir</B> (<R>char</R> <R>*path</R>)
+
+<B>DESCRIPTION:</B>
+The <B>fs_mkdir</B> function makes a new directory named <R>path</R>.
+
+<B>RETURN VALUES:</B>
+The value 0 is returned on success. Otherwise -1 is returned, and the fs_errno
+global variable is set to indicate the error.
+
+<B>SEE ALSO:</B> <B>fs_rmdir</B>.
+</TOPIC>
+
+<TOPIC name="fs_rmdir">
+<B>SYNOPSIS:</B> <R>int</R> <B>fs_rmdir</B> (<R>char</R> <R>*path</R>)
+
+<B>DESCRIPTION:</B>
+The <B>fs_rmdir</B> function removes the directory specified by <R>path</R>.
+The specified directory must not contain any file.
+If you want to delete all of the files and subdirectories in a directory, you
+should use the <B>fs_deltree</B> function.
+
+<B>RETURN VALUES:</B>
+The value 0 is returned on success. Otherwise -1 is returned, and the fs_errno
+global variable is set to indicate the error.
+
+<B>SEE ALSO:</B> <B>fs_mkdir</B>, <B>fs_deltree</B>.
+</TOPIC>
+
+<TOPIC name="fs_deltree">
+<B>SYNOPSIS:</B> <R>int</R> <B>fs_deltree<B> (<R>char</R> <R>*path</R>)
+
+<B>DESCRIPTION:</B>
+The <B>fs_deltree</B> function removes the directory specified by <R>path</R>,
+deleting all the files and the subdirectories in it.
+
+<B>RETURN VALUES:</B>
+The value 0 is returned on success. Otherwise -1 is returned, and the fs_errno
+global variable is set to indicate the error.
+
+<B>SEE ALSO:</B> <B>fs_rmdir</B>.
+</TOPIC>
+
+<TOPIC name="fs_open">
+<B>SYNOPSIS:</B> <R>FSFile</R> <R>*</R> <B>fs_open<B> (<R>char</R> <R>*fname</R>, <R>int</R> <R>create</R>)
+
+<B>DESCRIPTION:</B>
+
+</TOPIC>
+</PRE>
+</AHML>
